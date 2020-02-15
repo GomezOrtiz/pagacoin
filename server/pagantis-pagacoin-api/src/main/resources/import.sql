@@ -1,0 +1,2 @@
+INSERT INTO USER (id, name, surname, second_surname, date_of_birth, email, phone, created_at, created_by) VALUES (uuid(), "David", "Gómez", "Ortiz", "1989-03-11", "david.gomez.mail@gmail.com", "661125956", "2020-02-15", "ADMIN");
+INSERT INTO USER (id, name, surname, second_surname, date_of_birth, email, phone, created_at, created_by) VALUES (uuid(), "Pedro", "Pérez", "Rodríguez", "1975-06-10", "pedro.pérez@gmail.com", "666778899", "2020-02-15", "ADMIN");

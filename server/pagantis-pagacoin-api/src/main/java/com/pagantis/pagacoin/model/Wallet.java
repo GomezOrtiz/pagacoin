@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Type;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
@@ -19,6 +21,7 @@ public class Wallet extends BaseEntity {
 	
 	@Id
     @Column(name = "id", updatable = false, nullable = false)
+	@Type(type="uuid-char")
 	private UUID id;
 	
 	@ManyToOne

@@ -11,6 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Type;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
@@ -22,6 +24,7 @@ public class User extends BaseEntity {
 	
 	@Id
     @Column(name = "id", updatable = false, nullable = false)
+	@Type(type="uuid-char")
 	private UUID id;
 	
 	@Column(name = "name", nullable = false)
