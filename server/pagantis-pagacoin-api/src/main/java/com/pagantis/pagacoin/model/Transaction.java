@@ -1,5 +1,7 @@
 package com.pagantis.pagacoin.model;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,6 +37,8 @@ public class Transaction extends BaseEntity {
 		this.sender = sender;
 		this.receiver = receiver;
 		this.amount = amount;
+		this.createdAt = LocalDate.now();
+		this.createdBy = "ADMIN";
 	}
 	
 	private static final long serialVersionUID = -4363098503970503137L;

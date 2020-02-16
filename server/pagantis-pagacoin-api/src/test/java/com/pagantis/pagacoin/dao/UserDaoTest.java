@@ -14,12 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.CollectionUtils;
 
 import com.pagantis.pagacoin.model.User;
 import com.pagantis.pagacoin.model.Wallet;
 
 @DataJpaTest
+@ActiveProfiles("test")
 public class UserDaoTest {
 	
 	@Autowired

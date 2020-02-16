@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.pagantis.pagacoin.dao.UserDao;
 import com.pagantis.pagacoin.dao.WalletDao;
@@ -26,6 +27,7 @@ import com.pagantis.pagacoin.model.User;
 import com.pagantis.pagacoin.model.Wallet;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class WalletServiceImplTest {
 	
 	@MockBean
