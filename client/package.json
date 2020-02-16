@@ -17,6 +17,7 @@
   },
   "scripts": {
     "start": "PORT=3000 dotenv -e .env.dev react-scripts start",
+    "build": "react-scripts build",
     "build-dev": "dotenv -e .env.dev react-scripts build",
     "build-prod": "dotenv -e .env.prod react-scripts build",
     "test": "react-scripts test",
