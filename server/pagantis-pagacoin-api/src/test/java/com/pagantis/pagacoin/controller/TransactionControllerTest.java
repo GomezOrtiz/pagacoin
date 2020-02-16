@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,10 +16,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.pagantis.pagacoin.model.Transaction;
+import com.pagantis.pagacoin.model.TransactionRequest;
 import com.pagantis.pagacoin.model.User;
 import com.pagantis.pagacoin.model.Wallet;
 import com.pagantis.pagacoin.service.TransactionService;
@@ -79,13 +79,9 @@ public class TransactionControllerTest {
 		// GIVEN
 		Double amount = 50D;
 		Transaction transaction = new Transaction(sender, receiver, amount);
+		TransactionRequest request = new TransactionRequest(sender.getId().toString(), receiver.getId().toString(), amount);
 		
-		Mockito.when(service.transferAmount(sender.getId().toString(), receiver.getId().toString(), amount)).thenReturn(transaction);
-		
-		MultiValueMap<String, String> request = new LinkedMultiValueMap<>();
-		request.add("senderId", sender.getId().toString());
-		request.add("receiverId", receiver.getId().toString());
-		request.add("amount", String.valueOf(amount));
+		Mockito.when(service.transferAmount(any(TransactionRequest.class))).thenReturn(transaction);
 		
 		// WHEN
         ResponseEntity<Transaction> response = restTemplate.postForEntity("/api/transactions/new", request, Transaction.class);

@@ -1,38 +1,150 @@
-.App {
-  text-align: center;
+body, h1, h2, h3, h4, h5, p, a, button, div, table, span {
+	font-family: 'Raleway', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* BACKGROUND COLORS */
+
+.bg-main {
+	background-color: #574b90;	
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.bg-second {
+	background-color: #786fa6;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.bg-red {
+	background-color: #b33939;
 }
 
-.App-link {
-  color: #61dafb;
+/* TEXT COLOR */
+
+.txt-dark, .txt-dark:hover, .txt-dark:visited {
+	color: #574b90;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.txt-light, .txt-light:hover, .txt-light:visited {
+	color: #706fd3;
+}
+
+.txt-white, .txt-white:hover, .txt-white:visited {
+	color: #f8f9fa;
+}
+
+.txt-contrast, .txt-contrast:hover, .txt-contrast:visited {
+	color: #B53471;
+	font-weight: 500;
+}
+
+/* BORDER COLORS */
+
+.bdr-main {
+	border-color: rgba(87, 75, 144, .425);
+}
+
+/* BUTTON COLORS */
+
+.btn-main {
+	background-color: #574b90;	
+	color: #f8f9fa;
+}
+
+.btn-main:hover, .btn-main:visited {
+	color: rgba(255,255,255,.5);
+}
+
+.btn-second {
+	background-color: #786fa6;	
+	color: #f8f9fa;
+}
+
+.btn-second:hover, .btn-second:visited {
+	color: rgba(255,255,255,.5);
+}
+
+.btn-contrast {
+	background-color: #B53471;
+	color: #f8f9fa;
+}
+
+.btn-contrast:hover, .btn-contrast:visited {
+	color: rgba(255,255,255,.5);
+}
+
+.btn-green {
+	background-color: #218c74;
+	color: #f8f9fa;
+}
+
+.btn-green:hover, .btn-green:visited {
+	color: rgba(255,255,255,.5);
+}
+
+.btn-orange {
+	background-color: #f19066;
+	color: #f8f9fa;
+}
+
+.btn-orange:hover, .btn-orange:visited {
+	color: rgba(255,255,255,.5);
+}
+
+.btn-red {
+	background-color: #b33939;
+	color: #f8f9fa;
+}
+
+.btn-red:hover, .btn-red:visited {
+	color: rgba(255,255,255,.5);
+}
+
+.btn-blue {
+	background-color: #34ace0;
+	color: #f8f9fa;
+}
+
+.btn-blue:hover, .btn-blue:visited {
+	color: rgba(255,255,255,.5);
+}
+
+/* ALERT COLORS */
+
+.alert-main {
+	color: #574b90;
+    border-color: #574b90;
+}
+
+.alert-green {
+    color: #218c74;
+    border-color: #218c74;
+}
+
+.alert-orange {
+    color: #f19066;
+    border-color: #f19066;
+}
+
+.alert-red {
+    color: #b33939;
+    border-color: #b33939;
+}
+
+/* BADGES */
+
+.badge-main {
+	border: 1px solid #574b90;
+	padding: 10px;
+}
+.badge-main span {
+	color: #574b90;
+}
+
+/* PAGINATION */
+
+.page-item a, .page-item a:hover, .page-item a:visited {
+	color: #706fd3;
+}
+
+.page-item.active .page-link {
+	background-color: #574b90;
+    border-color: #574b90;
 }

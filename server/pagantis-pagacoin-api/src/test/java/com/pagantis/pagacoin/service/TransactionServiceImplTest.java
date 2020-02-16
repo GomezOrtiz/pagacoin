@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.pagantis.pagacoin.dao.TransactionDao;
 import com.pagantis.pagacoin.dao.WalletDao;
 import com.pagantis.pagacoin.model.Transaction;
+import com.pagantis.pagacoin.model.TransactionRequest;
 import com.pagantis.pagacoin.model.User;
 import com.pagantis.pagacoin.model.Wallet;
 
@@ -52,6 +53,7 @@ public class TransactionServiceImplTest {
 				.withCreatedBy("ADMIN")
 				.build();
 	}	
+	
 	@Test
 	void shouldTransferAmount() {
 		
@@ -85,9 +87,11 @@ public class TransactionServiceImplTest {
 		Mockito.when(walletDao.findById(receiverId)).thenReturn(Optional.of(receiver));
 		Mockito.when(transactionDao.save(any(Transaction.class))).thenReturn(expectedTransaction);
 		Mockito.when(walletDao.save(any(Wallet.class))).then(returnsFirstArg());
+		
+		TransactionRequest request = new TransactionRequest(senderId.toString(), receiverId.toString(), amount);
 
 		// WHEN
-		Transaction transaction = transactionService.transferAmount(senderId.toString(), receiverId.toString(), amount);
+		Transaction transaction = transactionService.transferAmount(request);
 		
 		// THEN
 		assertEquals(sender, transaction.getSender(), "El emisor de la transacción debería ser el esperado");
