@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import UserService from "../services/UserService"
 import UserTable from "./UserTable"
+import Pagination from "./Pagination"
 
 class UserList extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            users: []
+            users: [],
+            pageOfItems: []
         }
         this.services = new UserService()
     }
@@ -15,6 +17,10 @@ class UserList extends Component {
         this.services.getAllUsers()
         .then(data => this.setState({users: data}))
         .catch(err => this.props.setNewNotification(err.response.data, "red"))
+    }
+
+    onChangePage = pageOfItems => {
+        this.setState({ pageOfItems: pageOfItems });
     }
 
     componentDidMount() {
@@ -31,7 +37,8 @@ class UserList extends Component {
                         </div>
                     </div>
                     <div className="card-body">
-                        <UserTable users={this.state.users}></UserTable>
+                        <UserTable users={this.state.pageOfItems}></UserTable>
+                        <Pagination items={this.state.users} onChangePage={this.onChangePage} />
                     </div>
                 </div>
             </main>

@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import UserService from "../services/UserService"
 import UserWallet from "./UserWallet"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 class UserDetail extends Component {
     constructor(props) {
@@ -34,15 +38,15 @@ class UserDetail extends Component {
                     <div className="card-body bdr-main">
                         <ul className="list-group">
                             <li className="list-group-item">
-                                <span className="font-weight-bold mr-2">Nombre</span>
+                                <FontAwesomeIcon icon={faUser} className="txt-dark" />&nbsp;&nbsp;<span className="font-weight-bold mr-2">Nombre</span>
                                 <span>{this.state.user.name}</span>
                             </li>
                             <li className="list-group-item">
-                                <span className="font-weight-bold mr-2">Apellido</span>
+                                <FontAwesomeIcon icon={faUserCircle} className="txt-dark" />&nbsp;&nbsp;<span className="font-weight-bold mr-2">Apellido</span>
                                 <span>{`${this.state.user.surname} ${this.state.user.secondSurname}`}</span>
                             </li>
                             <li className="list-group-item">
-                                <span className="font-weight-bold mr-2">Email</span>
+                                <FontAwesomeIcon icon={faEnvelope} className="txt-dark" />&nbsp;&nbsp;<span className="font-weight-bold mr-2">Email</span>
                                 <span>{this.state.user.email}</span>
                             </li>
                         </ul>
