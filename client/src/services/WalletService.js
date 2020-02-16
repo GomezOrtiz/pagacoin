@@ -13,6 +13,11 @@ class WalletService {
         .then(response => response.data)
     }
 
+    getWalletsByOwner = ownerId => {
+        return this.service.get(`/wallets/owner/${ownerId}`)
+        .then(response => response.data)
+    }
+
     transferAmount = (senderId, receiverId, amount) => {
         const transactionRequest = {senderId, receiverId, amount}
         return this.service.post("/transactions/new", transactionRequest)

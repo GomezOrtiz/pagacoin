@@ -1,14 +1,13 @@
 import React from 'react'
-import {Navbar, Nav} from "react-bootstrap"
+import {Navbar} from "react-bootstrap"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCoins } from '@fortawesome/free-solid-svg-icons'
 
 function Header() {
   return (
     <Navbar variant="dark" className="bg-main">
-      <Navbar.Brand href="/">PagaCoin</Navbar.Brand>
-      <Nav className="mr-auto">
-        <Nav.Link href="/usuarios">Usuarios</Nav.Link>
-      </Nav>
-  </Navbar>
+        <Navbar.Brand href="/"><FontAwesomeIcon icon={faCoins} className="txt-light" />&nbsp;&nbsp;PagaCoin</Navbar.Brand>
+    </Navbar>
   )
 }
 
