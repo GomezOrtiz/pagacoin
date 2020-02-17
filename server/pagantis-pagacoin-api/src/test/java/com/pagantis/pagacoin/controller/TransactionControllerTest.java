@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.pagantis.pagacoin.exception.NotEnoughBalanceException;
+import com.pagantis.pagacoin.exception.ResourceNotFoundException;
 import com.pagantis.pagacoin.model.Transaction;
 import com.pagantis.pagacoin.model.TransactionRequest;
 import com.pagantis.pagacoin.model.User;
@@ -91,6 +93,38 @@ public class TransactionControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado de la respuesta debería ser el esperado");
         assertTransaction(transaction, responseTransaction);
+	}
+	
+	@Test
+	void shouldNotTransfer_resourceNotFound() {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(sender.getId().toString(), receiver.getId().toString(), 50D);
+
+		Mockito.when(service.transferAmount(any(TransactionRequest.class))).thenThrow(new ResourceNotFoundException("No se ha podido recuperar el emisor o el destinatario de la transacción"));
+		
+		// WHEN
+        ResponseEntity<?> response = restTemplate.postForEntity("/api/transactions/new", request, String.class);
+
+		// THEN
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "El código de estado de la respuesta debería ser el esperado");
+        assertEquals("No se ha podido recuperar el emisor o el destinatario de la transacción", response.getBody(), "El cuerpo de la respuesta debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransfer_notEnoughBalance() {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(sender.getId().toString(), receiver.getId().toString(), 50D);
+
+		Mockito.when(service.transferAmount(any(TransactionRequest.class))).thenThrow(new NotEnoughBalanceException("El balance de la cartera emisora es insuficiente para realizar la transacción"));
+		
+		// WHEN
+        ResponseEntity<?> response = restTemplate.postForEntity("/api/transactions/new", request, String.class);
+
+		// THEN
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "El código de estado de la respuesta debería ser el esperado");
+        assertEquals("El balance de la cartera emisora es insuficiente para realizar la transacción", response.getBody(), "El cuerpo de la respuesta debería ser el esperado");
 	}
 
 	private void assertTransaction(Transaction expected, Transaction actual) {

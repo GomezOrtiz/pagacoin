@@ -2,12 +2,12 @@ package com.pagantis.pagacoin.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,20 +87,30 @@ public class WalletServiceImplTest {
 	@Test
 	void shouldNotFindByOwner_nullOwnerId () {
 		
-		assertThrows(IllegalArgumentException.class, () -> {
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			walletService.findByOwner(null);
 		  });
+		
+		// THEN
+		assertEquals("La ID del propietario de la cartera es obligatoria", exception.getMessage(), "El mensaje de error debería ser el esperado");
 	}
 	
 	@Test
 	void shouldNotFindByOwner_nonExistentOwner() {
 		
 		// GIVEN
-		Mockito.when(walletDao.findByOwner(owner)).thenReturn(Collections.emptyList());
+		UUID ownerId = UUID.randomUUID(); 
 		
-		assertThrows(ResourceNotFoundException.class, () -> {
-			walletService.findByOwner(owner.getId().toString());
+		Mockito.when(userDao.findById(any(UUID.class))).thenReturn(Optional.empty());	
+		
+		// WHEN
+		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+			walletService.findByOwner(ownerId.toString());
 		  });
+		
+		// THEN
+		assertEquals("No hemos podido recuperar el propietario con ID " + ownerId, exception.getMessage(), "El mensaje de error debería ser el esperado");
 	}
 	
 	@Test
@@ -124,17 +134,25 @@ public class WalletServiceImplTest {
 	@Test
 	void shouldNotFindById_nullId () {
 		
-		assertThrows(IllegalArgumentException.class, () -> {
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			walletService.findById(null);
 		  });
+		
+		// THEN
+		assertEquals("El identificador de la cartera es obligatorio", exception.getMessage(), "El mensaje de error debería ser el esperado");
 	}
 	
 	@Test
 	void shouldNotFindById_notValidUUID () {
 		
-		assertThrows(IllegalArgumentException.class, () -> {
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			walletService.findById("123");
 		  });
+		
+		// THEN
+		assertEquals("Invalid UUID string: 123", exception.getMessage(), "El mensaje de error debería ser el esperado");
 	}
 	
 	private void assertWallet(Wallet expected, Wallet actual) {

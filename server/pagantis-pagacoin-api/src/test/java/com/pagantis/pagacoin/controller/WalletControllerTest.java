@@ -109,6 +109,21 @@ public class WalletControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado de la respuesta debería ser el esperado");
         assertWallet(wallet, responseWallet);
 	}
+	
+	@Test
+	void shouldNotGetWalletsById_resourceNotFound() {
+		
+		// GIVEN
+		UUID ownerId = UUID.randomUUID();
+		Mockito.when(service.findById(ownerId.toString())).thenReturn(Optional.empty());
+		
+		// WHEN
+        ResponseEntity<?> response = restTemplate.getForEntity("/api/wallets/" + ownerId, String.class);
+
+		// THEN
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "El código de estado de la respuesta debería ser el esperado");
+        assertEquals("No hemos podido encontrar un propietario con el identificador ".concat(ownerId.toString()), response.getBody(), "El cuerpo de la respuesta debería ser el esperado");
+	}
 
 	private void assertWallet(Wallet expected, Wallet actual) {
 		assertEquals(expected.getId(), actual.getId(), "La id de la cartera debería ser la esperada");

@@ -1,6 +1,7 @@
 package com.pagantis.pagacoin.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -18,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.pagantis.pagacoin.dao.TransactionDao;
 import com.pagantis.pagacoin.dao.WalletDao;
+import com.pagantis.pagacoin.exception.NotEnoughBalanceException;
+import com.pagantis.pagacoin.exception.ResourceNotFoundException;
 import com.pagantis.pagacoin.model.Transaction;
 import com.pagantis.pagacoin.model.TransactionRequest;
 import com.pagantis.pagacoin.model.User;
@@ -37,6 +40,12 @@ public class TransactionServiceImplTest {
 	private TransactionService transactionService;
 	
 	private User owner;
+	private UUID senderId;
+	private Double senderOriginalBalance;
+	private Wallet sender;
+	private Wallet receiver;
+	private Double receiverOriginalBalance;
+	private UUID receiverId;
 	
 	@BeforeEach
 	void init () {
@@ -52,43 +61,40 @@ public class TransactionServiceImplTest {
 				.withCreatedAt(LocalDate.now())
 				.withCreatedBy("ADMIN")
 				.build();
+		
+		senderId = UUID.randomUUID();
+        sender = new Wallet.Builder()
+        		.withId(senderId)
+        		.withOwner(owner)
+        		.withCreatedAt(LocalDate.now())
+        		.withCreatedBy("ADMIN")
+        		.build();
+        senderOriginalBalance = 150D;
+        sender.setBalance(senderOriginalBalance);
+        
+		receiverId = UUID.randomUUID();
+        receiver = new Wallet.Builder()
+        		.withId(receiverId)
+        		.withOwner(owner)
+        		.withCreatedAt(LocalDate.now())
+        		.withCreatedBy("ADMIN")
+        		.build();
+        receiverOriginalBalance = 50D;
+        receiver.setBalance(receiverOriginalBalance);
 	}	
 	
 	@Test
 	void shouldTransferAmount() {
 		
 		// GIVEN
-		
-		UUID senderId = UUID.randomUUID();
-        Wallet sender = new Wallet.Builder()
-        		.withId(senderId)
-        		.withOwner(owner)
-        		.withCreatedAt(LocalDate.now())
-        		.withCreatedBy("ADMIN")
-        		.build();
-        Double senderOriginalBalance = 150D;
-        sender.setBalance(senderOriginalBalance);
-        
-		UUID receiverId = UUID.randomUUID();
-        Wallet receiver = new Wallet.Builder()
-        		.withId(receiverId)
-        		.withOwner(owner)
-        		.withCreatedAt(LocalDate.now())
-        		.withCreatedBy("ADMIN")
-        		.build();
-        Double receiverOriginalBalance = 50D;
-        receiver.setBalance(receiverOriginalBalance);
-		
-        Double amount = 50D;
-        
+		Double amount = 50D;
         Transaction expectedTransaction = new Transaction(sender, receiver, amount);
+		TransactionRequest request = new TransactionRequest(senderId.toString(), receiverId.toString(), amount);
         
 		Mockito.when(walletDao.findById(senderId)).thenReturn(Optional.of(sender));
 		Mockito.when(walletDao.findById(receiverId)).thenReturn(Optional.of(receiver));
 		Mockito.when(transactionDao.save(any(Transaction.class))).thenReturn(expectedTransaction);
 		Mockito.when(walletDao.save(any(Wallet.class))).then(returnsFirstArg());
-		
-		TransactionRequest request = new TransactionRequest(senderId.toString(), receiverId.toString(), amount);
 
 		// WHEN
 		Transaction transaction = transactionService.transferAmount(request);
@@ -99,5 +105,123 @@ public class TransactionServiceImplTest {
 		assertEquals(amount, transaction.getAmount(), "La suma de la transacción debería ser la esperada");
 		assertEquals(senderOriginalBalance - amount, sender.getBalance(), "El balance de la cartera emisora después de la transacción debería ser el esperado");
 		assertEquals(receiverOriginalBalance + amount, receiver.getBalance(), "El balance de la cartera receptora después de la transacción debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransferAmount_nullSenderId () {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(null, UUID.randomUUID().toString(), 50D);
+		
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+			transactionService.transferAmount(request);
+		});
+		
+		// THEN
+		assertEquals("Debe especificarse la ID de la cartera emisora", exception.getMessage(), "El mensaje de error debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransferAmount_nullReceiverId () {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(UUID.randomUUID().toString(), null, 50D);
+		
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+			transactionService.transferAmount(request);
+		});
+		
+		// THEN
+		assertEquals("Debe especificarse la ID de la cartera receptora", exception.getMessage(), "El mensaje de error debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransferAmount_notValidId () {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(senderId.toString(), receiverId.toString(), 50D);
+		
+		Mockito.when(walletDao.findById(senderId)).thenThrow(IllegalArgumentException.class);
+		
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+			transactionService.transferAmount(request);
+		});
+		
+		// THEN
+		assertEquals("La id de la cartera especificada no es válida", exception.getMessage(), "El mensaje de error debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransferAmount_nullSenderOrReceiver () {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(UUID.randomUUID().toString(), UUID.randomUUID().toString(), 50D);
+		
+		Mockito.when(walletDao.findById(any(UUID.class))).thenReturn(Optional.empty());
+		
+		// WHEN
+		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+			transactionService.transferAmount(request);
+		});
+		
+		// THEN
+		assertEquals("No se ha podido recuperar la cartera emisora o receptora", exception.getMessage(), "El mensaje de error debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransferAmount_nullAmount () {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(receiverId.toString(), senderId.toString(), null);
+		
+		Mockito.when(walletDao.findById(senderId)).thenReturn(Optional.of(sender));
+		Mockito.when(walletDao.findById(receiverId)).thenReturn(Optional.of(receiver));
+		
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+			transactionService.transferAmount(request);
+		});
+		
+		// THEN
+		assertEquals("La cantidad especificada para la transacción no puede ser nula o cero", exception.getMessage(), "El mensaje de error debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransferAmount_zeroAmount () {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(receiverId.toString(), senderId.toString(), 0D);
+		
+		Mockito.when(walletDao.findById(senderId)).thenReturn(Optional.of(sender));
+		Mockito.when(walletDao.findById(receiverId)).thenReturn(Optional.of(receiver));
+		
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+			transactionService.transferAmount(request);
+		});
+		
+		// THEN
+		assertEquals("La cantidad especificada para la transacción no puede ser nula o cero", exception.getMessage(), "El mensaje de error debería ser el esperado");
+	}
+	
+	@Test
+	void shouldNotTransferAmount_notEnoughBalance () {
+		
+		// GIVEN
+		TransactionRequest request = new TransactionRequest(receiverId.toString(), senderId.toString(), 200D);
+		
+		Mockito.when(walletDao.findById(senderId)).thenReturn(Optional.of(sender));
+		Mockito.when(walletDao.findById(receiverId)).thenReturn(Optional.of(receiver));
+		
+		// WHEN
+		Exception exception = assertThrows(NotEnoughBalanceException.class, () -> {
+			transactionService.transferAmount(request);
+		});
+		
+		// THEN
+		assertEquals("El balance de la cartera emisora es insuficiente para realizar la transacción", exception.getMessage(), "El mensaje de error debería ser el esperado");
 	}
 }

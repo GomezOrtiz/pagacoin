@@ -83,17 +83,25 @@ public class UserServiceImplTest {
 	@Test
 	void shouldNotFindById_nullId () {
 		
-		assertThrows(IllegalArgumentException.class, () -> {
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			userService.findById(null);
 		  });
+		
+		// THEN
+		assertEquals("El identificador de usuario es obligatorio", exception.getMessage(), "El mensaje de error debería ser el esperado");
 	}
 	
 	@Test
 	void shouldNotFindById_notValidUUID () {
 		
-		assertThrows(IllegalArgumentException.class, () -> {
+		// WHEN
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			userService.findById("123");
 		  });
+		
+		// THEN
+		assertEquals("Invalid UUID string: 123", exception.getMessage(), "El mensaje de error debería ser el esperado");
 	}
 	
 	private void assertUser(User expected, User actual) {
