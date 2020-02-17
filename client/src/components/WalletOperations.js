@@ -54,7 +54,13 @@ class WalletOperations extends Component {
     handleSubmit = e => {
         e.preventDefault()
         this.walletService.transferAmount(this.state.wallet.id, this.state.receiverId, this.state.amount)
-        .then(data => this.props.setNewNotification(`La transacción ${data.id} se ha realizado con éxito`, "green"))
+        .then(data => {
+            this.setState({wallet: {
+                ...this.state.wallet,
+                balance: this.state.wallet.balance - this.state.amount
+            }})
+            this.props.setNewNotification(`La transacción ${data.id} se ha realizado con éxito`, "green")
+        })
         .catch(err => this.props.setNewNotification(err.response.data, "red"))
     }
     
