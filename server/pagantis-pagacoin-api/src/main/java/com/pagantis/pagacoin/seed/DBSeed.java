@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -69,16 +70,18 @@ public class DBSeed {
 	private void saveRandomUser(Faker faker) {
 		
 		LocalDate creationDate = getRandomCreationDate();
+		String name = faker.name().firstName();
+		String lastName = faker.name().lastName();
 
 		UUID id = UUID.randomUUID();
 		User user = new User.Builder()
 				.withId(id)
-				.withName(faker.name().firstName())
-				.withSurname(faker.name().lastName())
+				.withName(name)
+				.withSurname(lastName)
 				.withSecondSurname(faker.name().lastName())
 				.withDateOfBirth(getRandomDate())
-				.withEmail(faker.internet().safeEmailAddress())
-				.withPhone(faker.phoneNumber().cellPhone())
+				.withEmail(getEmail(name, lastName))
+				.withPhone(cleanPhone(faker.phoneNumber().cellPhone()))
 				.withCreatedAt(creationDate)
 				.withCreatedBy("ADMIN")
 				.build();
@@ -126,6 +129,14 @@ public class DBSeed {
 		}
 		
 		return randomWallet;
+	}
+	
+	private String cleanPhone(String phone) {
+		return phone.replaceAll("[^a-zA-Z0-9]", "");
+	}
+	
+	private String getEmail(String name, String surname) {
+		return String.format("%1$s.%2$s@gmail.com", StringUtils.stripAccents(StringUtils.lowerCase(name)), StringUtils.stripAccents(StringUtils.lowerCase(surname)));
 	}
 	
 	private LocalDate getRandomCreationDate() {

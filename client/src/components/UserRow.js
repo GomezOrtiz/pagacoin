@@ -6,7 +6,13 @@ function UserRow({user}) {
         <tr>
             <td>{user.name}</td>
             <td>{`${user.surname} ${user.secondSurname}`}</td>
-            <td>{user.dateOfBirth}</td>
+            <td>
+                {new Intl.DateTimeFormat("es-ES", {
+                year: "numeric",
+                month: "long",
+                day: "2-digit"
+                }).format(new Date(user.dateOfBirth))}
+            </td>
             <td>{user.email}</td>
             <td>{user.phone}</td>
             <td>
