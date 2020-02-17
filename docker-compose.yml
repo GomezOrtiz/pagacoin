@@ -1,47 +1,45 @@
-# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
-
 version: '3.7'
 
-# Define services
 services:
-  # App backend service
-  app-server:
-    # Configuration for building the docker image for the backend service
+  pagantis-app:
     build:
-      context: server/pagantis-pagacoin-api # Use an image built from the specified dockerfile in the `server/pagantis-pagacoin-api` directory.
+      context: server/pagantis-pagacoin-api
       dockerfile: Dockerfile
     ports:
-      - "8080:8080" # Forward the exposed port 8080 on the container to port 8080 on the host machine
+      - "8080:8080"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker" 
     restart: always
+    networks:
+      - pagantis-backend
+      - pagantis-frontend
     depends_on: 
-      - db # This service depends on mysql. Start that first.
-    environment: # Pass environment variables to the service
-      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/db_pagantis?serverTimezone=Europe/Madrid
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: secret  
-    networks: # Networks to join (Services on the same network can communicate with each other using their name)
-      - backend
+      - mysqldb
+  
+  react-front:
+    build:
+      context: client
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_URL: http://127.0.0.1:8080/api/
+    ports:
+      - '3000:80'
+    networks:
+      - pagantis-frontend
+    depends_on:
+      - pagantis-app
 
-  # Database Service (Mysql)
-  db:
+  mysqldb:
     image: mysql:5.7
     ports:
       - "3306:3306"
     restart: always
     environment:
-    - MYSQL_ROOT_PASSWORD="root"
-    - MYSQL_USER="root"
-    - MYSQL_PASSWORD="secret"
-    - MYSQL_DATABASE="db_pagantis"
-    volumes:
-      - db-data:/var/lib/mysql
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=db_pagantis
     networks:
-      - backend  
-  
-# Volumes
-volumes:
-  db-data:
+      - pagantis-backend  
 
-# Networks to be created to facilitate communication between containers
 networks:
-  backend:
+  pagantis-backend:
+  pagantis-frontend:
