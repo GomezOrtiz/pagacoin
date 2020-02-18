@@ -20,8 +20,6 @@ services:
     build:
       context: client
       dockerfile: Dockerfile
-      args:
-        REACT_APP_URL: http://127.0.0.1:8080/api/
     ports:
       - '3000:80'
     networks:

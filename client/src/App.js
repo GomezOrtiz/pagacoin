@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Switch, Route} from "react-router-dom"
+import {Switch, Route, HashRouter} from "react-router-dom"
 import './App.css'
 import Header from "./components/Header"
 import UserList from "./components/UserList"
@@ -30,12 +30,14 @@ class App extends Component {
         <Header></Header>
         <NotificationsBadge notification={this.state.notification}></NotificationsBadge>
         <main className="main-container">
+          <HashRouter basename="/"> 
           <Switch>
             <Route exact path='/' render={props => <UserList {...props} setNewNotification={this.setNewNotification}></UserList>} /> 
             <Route exact path='/usuarios' render={props => <UserList {...props} setNewNotification={this.setNewNotification}></UserList>} />
             <Route exact path='/usuarios/:id' render={props => <UserDetail {...props} setNewNotification={this.setNewNotification}></UserDetail>} />    
             <Route exact path='/carteras/:id' render={props => <WalletOperations {...props} setNewNotification={this.setNewNotification}></WalletOperations>} />                                          
           </Switch>
+          </HashRouter>
         </main>
       </div>
     )
